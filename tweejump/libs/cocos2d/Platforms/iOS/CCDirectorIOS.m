@@ -165,7 +165,7 @@ CGFloat	__ccContentScaleFactor = 1;
 	
 	// By default enable VertexArray, ColorArray, TextureCoordArray and Texture2D
 	CC_ENABLE_DEFAULT_GL_STATES();
-	
+
 	/* draw the scene */
 	[runningScene_ visit];
 	
@@ -205,12 +205,12 @@ CGFloat	__ccContentScaleFactor = 1;
 		case kCCDirectorProjection3D:
 		{
 			float zeye = [self getZEye];
-
+			
 			glViewport(0, 0, size.width, size.height);
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 //			gluPerspective(60, (GLfloat)size.width/size.height, zeye-size.height/2, zeye+size.height/2 );
-			gluPerspective(60, (GLfloat)size.width/size.height, 0.5f, 1500);
+			gluPerspective(60, (GLfloat)size.width/size.height, 0.5f, (zeye > 1400) ? (zeye + 100) : 1500);
 
 			glMatrixMode(GL_MODELVIEW);	
 			glLoadIdentity();
