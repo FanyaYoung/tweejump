@@ -1,6 +1,7 @@
 #import "Highscores.h"
 #import "Main.h"
 #import "Game.h"
+#import "cocos2d-ui.h"
 
 @interface Highscores (Private)
 - (void)loadCurrentPlayer;
@@ -52,36 +53,41 @@
 		NSString *player = [highscore objectAtIndex:0];
 		int score = [[highscore objectAtIndex:1] intValue];
 		
-		CCLabelTTF *label1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%d",(count+1)] dimensions:CGSizeMake(30,40) alignment:UITextAlignmentRight fontName:@"Arial" fontSize:14];
+		CCLabelTTF *label1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%d",(count+1)] fontName:@"Arial" fontSize:14 dimensions:CGSizeMake(30,40)];
 		[self addChild:label1 z:5];
-		[label1 setColor:ccBLACK];
+        [label1 setHorizontalAlignment:CCTextAlignmentRight];
+		[label1 setColor:[CCColor blackColor]];
 		[label1 setOpacity:200];
 		label1.position = ccp(15,start_y-count*step-2.0f);
-		
-		CCLabelTTF *label2 = [CCLabelTTF labelWithString:player dimensions:CGSizeMake(240,40) alignment:UITextAlignmentLeft fontName:@"Arial" fontSize:16];
+	
+		CCLabelTTF *label2 = [CCLabelTTF labelWithString:player fontName:@"Arial" fontSize:16 dimensions:CGSizeMake(240,40)];
 		[self addChild:label2 z:5];
-		[label2 setColor:ccBLACK];
+		[label2 setColor:[CCColor blackColor]];
+        [label2 setHorizontalAlignment:CCTextAlignmentLeft];
 		label2.position = ccp(160,start_y-count*step);
 
-		CCLabelTTF *label3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%d",score] dimensions:CGSizeMake(290,40) alignment:UITextAlignmentRight fontName:@"Arial" fontSize:16];
+		CCLabelTTF *label3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%d",score] fontName:@"Arial" fontSize:16 dimensions:CGSizeMake(290,40)];
 		[self addChild:label3 z:5];
-		[label3 setColor:ccBLACK];
+        [label3 setHorizontalAlignment:CCTextAlignmentRight];
+		[label3 setColor:[CCColor blackColor]];
 		[label3 setOpacity:200];
 		label3.position = ccp(160,start_y-count*step);
 		
 		count++;
 		if(count == 10) break;
 	}
-
-	CCMenuItem *button1 = [CCMenuItemImage itemFromNormalImage:@"playAgainButton.png" selectedImage:@"playAgainButton.png" target:self selector:@selector(button1Callback:)];
-	CCMenuItem *button2 = [CCMenuItemImage itemFromNormalImage:@"changePlayerButton.png" selectedImage:@"changePlayerButton.png" target:self selector:@selector(button2Callback:)];
-	
-	CCMenu *menu = [CCMenu menuWithItems: button1, button2, nil];
-
-	[menu alignItemsVerticallyWithPadding:9];
-	menu.position = ccp(160,58);
-	
-	[self addChild:menu];
+    
+    CCButton *button1 = [CCButton buttonWithTitle:@"" spriteFrame:[CCSpriteFrame frameWithImageNamed:@"playAgainButton.png"]];
+    [button1 setTarget:self selector:@selector(button1Callback:)];
+    button1.positionType = CCPositionTypeNormalized;
+    button1.position = ccp(0.50f, 0.15f);
+    [self addChild:button1];
+    
+    CCButton *button2 = [CCButton buttonWithTitle:@"" spriteFrame:[CCSpriteFrame frameWithImageNamed:@"changePlayerButton.png"]];
+    [button2 setTarget:self selector:@selector(button2Callback:)];
+    button2.positionType = CCPositionTypeNormalized;
+    button2.position = ccp(0.50f, 0.05f);
+    [self addChild:button2];
 	
 	return self;
 }
@@ -90,17 +96,17 @@
 }
 
 - (void)loadCurrentPlayer {
-//	NSLog(@"loadCurrentPlayer");
+//	CCLOG(@"loadCurrentPlayer");
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
-	currentPlayer = nil;
-	currentPlayer = [defaults objectForKey:@"player"];
-	if(!currentPlayer) {
-		currentPlayer = @"anonymous";
+	_currentPlayer = nil;
+	_currentPlayer = [defaults objectForKey:@"player"];
+	if(!_currentPlayer) {
+		_currentPlayer = @"anonymous";
 	}
 
-//	NSLog(@"currentPlayer = %@",currentPlayer);
+//	CCLOG(@"currentPlayer = %@",currentPlayer);
 }
 
 - (void)loadHighscores {
@@ -108,22 +114,22 @@
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
-	highscores = nil;
-	highscores = [[NSMutableArray alloc] initWithArray: [defaults objectForKey:@"highscores"]];
+	_highscores = nil;
+	_highscores = [[NSMutableArray alloc] initWithArray: [defaults objectForKey:@"highscores"]];
 #ifdef RESET_DEFAULTS	
 	[highscores removeAllObjects];
 #endif
-	if([highscores count] == 0) {
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:1000000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:750000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:500000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:250000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:100000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:50000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:20000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:10000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:5000],nil]];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:1000],nil]];
+	if([_highscores count] == 0) {
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:1000000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:750000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:500000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:250000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:100000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:50000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:20000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:10000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:5000],nil]];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:1000],nil]];
 	}
 #ifdef RESET_DEFAULTS	
 	[self saveHighscores];
@@ -133,21 +139,21 @@
 - (void)updateHighscores {
 //	CCLOG(@"updateHighscores");
 	
-	currentScorePosition = -1;
+	_currentScorePosition = -1;
 	int count = 0;
-	for(NSMutableArray *highscore in highscores) {
+	for(NSMutableArray *highscore in _highscores) {
 		int score = [[highscore objectAtIndex:1] intValue];
 		
-		if(currentScore >= score) {
-			currentScorePosition = count;
+		if(_currentScore >= score) {
+			_currentScorePosition = count;
 			break;
 		}
 		count++;
 	}
 	
-	if(currentScorePosition >= 0) {
-		[highscores insertObject:[NSArray arrayWithObjects:currentPlayer,[NSNumber numberWithInt:currentScore],nil] atIndex:currentScorePosition];
-		[highscores removeLastObject];
+	if(_currentScorePosition >= 0) {
+		[_highscores insertObject:[NSArray arrayWithObjects:_currentPlayer,[NSNumber numberWithInt:_currentScore],nil] atIndex:_currentScorePosition];
+		[_highscores removeLastObject];
 	}
 }
 
@@ -157,7 +163,7 @@
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
-	[defaults setObject:currentPlayer forKey:@"player"];
+	[defaults setObject:_currentPlayer forKey:@"player"];
 }
 
 - (void)saveHighscores {
@@ -165,84 +171,44 @@
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
-	[defaults setObject:highscores forKey:@"highscores"];
+	[defaults setObject:_highscores forKey:@"highscores"];
 }
 
 - (void)button1Callback:(id)sender {
 //	CCLOG(@"button1Callback");
 
-	CCTransitionScene *ts = [CCTransitionFade transitionWithDuration:0.5f scene:[Game scene] withColor:ccWHITE];
-	[[CCDirector sharedDirector] replaceScene:ts];
+    [[CCDirector sharedDirector] replaceScene:[Game scene]
+                               withTransition:[CCTransition  transitionFadeWithColor:[CCColor whiteColor] duration:0.5f]];
 }
 
 - (void)button2Callback:(id)sender {
 //	CCLOG(@"button2Callback");
 	
-	changePlayerAlert = [UIAlertView new];
-	changePlayerAlert.title = @"Change Player";
-	changePlayerAlert.message = @"\n";
-	changePlayerAlert.delegate = self;
-	[changePlayerAlert addButtonWithTitle:@"Save"];
-	[changePlayerAlert addButtonWithTitle:@"Cancel"];
-
-	changePlayerTextField = [[UITextField alloc] initWithFrame:CGRectMake(20, 45, 245, 27)];
-	changePlayerTextField.borderStyle = UITextBorderStyleRoundedRect;
-	[changePlayerAlert addSubview:changePlayerTextField];
-//	changePlayerTextField.placeholder = @"Enter your name";
-//	changePlayerTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
-	changePlayerTextField.keyboardType = UIKeyboardTypeDefault;
-	changePlayerTextField.returnKeyType = UIReturnKeyDone;
-	changePlayerTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-	changePlayerTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-	changePlayerTextField.delegate = self;
-	[changePlayerTextField becomeFirstResponder];
-
-	[changePlayerAlert show];
-}
-
-- (void)draw {
-	[super draw];
-	
-	if(currentScorePosition < 0) return;
-
-	glColor4f(0.0f, 0.0f, 0.0f, 0.2f);
-
-	float w = 320.0f;
-	float h = 27.0f;
-	float x = (320.0f - w) / 2.0f;
-	float y = 359.0f - currentScorePosition * h;
-
-	GLfloat vertices[4][2];	
-	GLubyte indices[4] = { 0, 1, 3, 2 };
-
-	vertices[0][0] = x;		vertices[0][1] = y;
-	vertices[1][0] = x+w;	vertices[1][1] = y;
-	vertices[2][0] = x+w;	vertices[2][1] = y+h;
-	vertices[3][0] = x;		vertices[3][1] = y+h;
-	
-	glDisable(GL_TEXTURE_2D);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	
-	glVertexPointer(2, GL_FLOAT, 0, vertices);
-	glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
-
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnable(GL_TEXTURE_2D);
-	
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	_changePlayerAlert = [UIAlertView new];
+	_changePlayerAlert.title = @"Change Player";
+	_changePlayerAlert.message = @"\n";
+	_changePlayerAlert.delegate = self;
+    
+	[_changePlayerAlert addButtonWithTitle:@"Save"];
+	[_changePlayerAlert addButtonWithTitle:@"Cancel"];
+    
+    // iOS7 Text Input in Alert
+    _changePlayerAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+    
+	[_changePlayerAlert show];
 }
 
 - (void)changePlayerDone {
-	currentPlayer = [changePlayerTextField.text retain];
+    UITextField *textField = [_changePlayerAlert textFieldAtIndex:0];
+	_currentPlayer = textField.text;
 	[self saveCurrentPlayer];
-	if(currentScorePosition >= 0) {
-		[highscores removeObjectAtIndex:currentScorePosition];
-		[highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:0],nil]];
+	if(_currentScorePosition >= 0) {
+		[_highscores removeObjectAtIndex:_currentScorePosition];
+		[_highscores addObject:[NSArray arrayWithObjects:@"tweejump",[NSNumber numberWithInt:0],nil]];
 		[self saveHighscores];
-		[[CCDirector sharedDirector] replaceScene:
-         [CCTransitionFade transitionWithDuration:1 scene:[Highscores sceneWithScore:currentScore] withColor:ccWHITE]];
+        
+        [[CCDirector sharedDirector] replaceScene:[Highscores sceneWithScore:_currentScore]
+                                   withTransition:[CCTransition  transitionFadeWithColor:[CCColor whiteColor] duration:1.0f]];
 	}
 }
 
@@ -258,7 +224,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 //	CCLOG(@"textFieldShouldReturn");
-	[changePlayerAlert dismissWithClickedButtonIndex:0 animated:YES];
+	[_changePlayerAlert dismissWithClickedButtonIndex:0 animated:YES];
 	[self changePlayerDone];
 	return YES;
 }

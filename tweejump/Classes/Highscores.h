@@ -8,7 +8,6 @@
 	int _currentScorePosition;
 	NSMutableArray *_highscores;
 	UIAlertView *_changePlayerAlert;
-	UITextField *_changePlayerTextField;
 }
 + (Highscores *)sceneWithScore:(int)lastScore;
 - (id)initWithScore:(int)lastScore;

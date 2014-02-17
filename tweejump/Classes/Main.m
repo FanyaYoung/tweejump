@@ -63,7 +63,7 @@
 	CCSprite *cloud = [CCSprite spriteWithTexture:[batchNode texture] rect:rect];
     [batchNode addChild:cloud z:3 name:[NSString stringWithFormat:@"%d",_currentCloudTag]];
 	
-	cloud.opacity = 128;
+	cloud.opacity = 0.5f;
 }
 
 - (void)resetClouds {
