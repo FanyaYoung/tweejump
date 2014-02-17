@@ -3,13 +3,15 @@
 
 @interface Highscores : Main <UITextFieldDelegate>
 {
-	NSString *currentPlayer;
-	int currentScore;
-	int currentScorePosition;
-	NSMutableArray *highscores;
-	UIAlertView *changePlayerAlert;
-	UITextField *changePlayerTextField;
+	NSString *_currentPlayer;
+	int _currentScore;
+	int _currentScorePosition;
+	NSMutableArray *_highscores;
+	UIAlertView *_changePlayerAlert;
+	UITextField *_changePlayerTextField;
 }
-+ (CCScene *)sceneWithScore:(int)lastScore;
++ (Highscores *)sceneWithScore:(int)lastScore;
 - (id)initWithScore:(int)lastScore;
+
+
 @end

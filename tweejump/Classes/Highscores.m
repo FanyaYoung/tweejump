@@ -15,35 +15,31 @@
 
 @implementation Highscores
 
-+ (CCScene *)sceneWithScore:(int)lastScore
++ (Highscores *)sceneWithScore:(int)lastScore
 {
-    CCScene *game = [CCScene node];
-    
-    Highscores *layer = [[[Highscores alloc] initWithScore:lastScore] autorelease];
-    [game addChild:layer];
-    
-    return game;
+    return [[self alloc] initWithScore:lastScore];
 }
 
+
 - (id)initWithScore:(int)lastScore {
-//	NSLog(@"Highscores::init");
 	
-	if(![super init]) return nil;
+    self = [super init];
+    if (!self) return(nil);
 
-//	NSLog(@"lastScore = %d",lastScore);
+//	CCLOG(@"lastScore = %d",lastScore);
 	
-	currentScore = lastScore;
+	_currentScore = lastScore;
 
-//	NSLog(@"currentScore = %d",currentScore);
+//	CCLOG(@"currentScore = %d",currentScore);
 	
 	[self loadCurrentPlayer];
 	[self loadHighscores];
 	[self updateHighscores];
-	if(currentScorePosition >= 0) {
+	if(_currentScorePosition >= 0) {
 		[self saveHighscores];
 	}
 	
-	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByTag:kSpriteManager];
+	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByName:kSpriteManager recursively:NO];
 	
 	CCSprite *title = [CCSprite spriteWithTexture:[batchNode texture] rect:CGRectMake(608,192,225,57)];
 	[batchNode addChild:title z:5];
@@ -52,7 +48,7 @@
 	float start_y = 360.0f;
 	float step = 27.0f;
 	int count = 0;
-	for(NSMutableArray *highscore in highscores) {
+	for(NSMutableArray *highscore in _highscores) {
 		NSString *player = [highscore objectAtIndex:0];
 		int score = [[highscore objectAtIndex:1] intValue];
 		
@@ -91,9 +87,6 @@
 }
 
 - (void)dealloc {
-//	NSLog(@"Highscores::dealloc");
-	[highscores release];
-	[super dealloc];
 }
 
 - (void)loadCurrentPlayer {
@@ -111,7 +104,7 @@
 }
 
 - (void)loadHighscores {
-//	NSLog(@"loadHighscores");
+//	CCLOG(@"loadHighscores");
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
@@ -138,7 +131,7 @@
 }
 
 - (void)updateHighscores {
-//	NSLog(@"updateHighscores");
+//	CCLOG(@"updateHighscores");
 	
 	currentScorePosition = -1;
 	int count = 0;
@@ -159,8 +152,8 @@
 }
 
 - (void)saveCurrentPlayer {
-//	NSLog(@"saveCurrentPlayer");
-//	NSLog(@"currentPlayer = %@",currentPlayer);
+//	CCLOG(@"saveCurrentPlayer");
+//	CCLOG(@"currentPlayer = %@",_currentPlayer);
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
@@ -168,7 +161,7 @@
 }
 
 - (void)saveHighscores {
-//	NSLog(@"saveHighscores");
+//	CCLOG(@"saveHighscores");
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
@@ -176,14 +169,14 @@
 }
 
 - (void)button1Callback:(id)sender {
-//	NSLog(@"button1Callback");
+//	CCLOG(@"button1Callback");
 
 	CCTransitionScene *ts = [CCTransitionFade transitionWithDuration:0.5f scene:[Game scene] withColor:ccWHITE];
 	[[CCDirector sharedDirector] replaceScene:ts];
 }
 
 - (void)button2Callback:(id)sender {
-//	NSLog(@"button2Callback");
+//	CCLOG(@"button2Callback");
 	
 	changePlayerAlert = [UIAlertView new];
 	changePlayerAlert.title = @"Change Player";
@@ -254,7 +247,7 @@
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-//	NSLog(@"alertView:clickedButtonAtIndex: %i",buttonIndex);
+//	CCLOG(@"alertView:clickedButtonAtIndex: %i",buttonIndex);
 	
 	if(buttonIndex == 0) {
 		[self changePlayerDone];
@@ -264,7 +257,7 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-//	NSLog(@"textFieldShouldReturn");
+//	CCLOG(@"textFieldShouldReturn");
 	[changePlayerAlert dismissWithClickedButtonIndex:0 animated:YES];
 	[self changePlayerDone];
 	return YES;
