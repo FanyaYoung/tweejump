@@ -44,9 +44,9 @@
 	
 	CCSprite *title = [CCSprite spriteWithTexture:[batchNode texture] rect:CGRectMake(608,192,225,57)];
 	[batchNode addChild:title z:5];
-	title.position = ccp(160,420);
+	title.position = ccp(160,self.contentSize.height-(title.contentSize.height*1.10f)); // Move near Top of Screen, 10% Gutter
 
-	float start_y = 360.0f;
+	float start_y = title.positionInPoints.y-title.contentSize.height;
 	float step = 27.0f;
 	int count = 0;
 	for(NSMutableArray *highscore in _highscores) {
@@ -76,6 +76,15 @@
 		count++;
 		if(count == 10) break;
 	}
+    
+    // Highlight Current Score
+    if(_currentScorePosition>=0) {
+        float highlightY = 359.0f - _currentScorePosition * step;
+        CCNodeColor *bar = [CCNodeColor nodeWithColor:[CCColor blackColor] width:self.contentSize.width height:step];
+        bar.position = ccp(0,highlightY);
+        bar.opacity  = 0.5f;
+        [self addChild:bar z:10];
+    }
     
     CCButton *button1 = [CCButton buttonWithTitle:@"" spriteFrame:[CCSpriteFrame frameWithImageNamed:@"playAgainButton.png"]];
     [button1 setTarget:self selector:@selector(button1Callback:)];
@@ -217,8 +226,6 @@
 	
 	if(buttonIndex == 0) {
 		[self changePlayerDone];
-	} else {
-		// nothing
 	}
 }
 

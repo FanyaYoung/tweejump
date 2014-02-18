@@ -28,7 +28,10 @@
 
 	CCSprite *background = [CCSprite spriteWithTexture:[batchNode texture] rect:CGRectMake(0,0,320,480)];
 	[batchNode addChild:background];
-	background.position = CGPointMake(160,240);
+    background.position = ccp(self.contentSize.width*0.5f,self.contentSize.height*0.5f);
+    
+    // Scale Background (Taller Devices)
+    background.scaleY = self.contentSize.height/background.contentSize.height;
 
 	[self initClouds];
 	

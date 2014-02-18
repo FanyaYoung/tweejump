@@ -44,14 +44,22 @@
 		bonus.visible = NO;
 	}
 
-
 	CCLabelBMFont *scoreLabel = [CCLabelBMFont labelWithString:@"0" fntFile:@"bitmapFont.fnt"];
 	[self addChild:scoreLabel z:5 name:kScoreLabel];
-	scoreLabel.position = ccp(160,430);
-
-	self.userInteractionEnabled = YES;
-
-	[[UIAccelerometer sharedAccelerometer] setUpdateInterval:(1.0 / kFPS)];
+    scoreLabel.positionType = CCPositionTypeNormalized;
+    scoreLabel.position = ccp(0.50f, 0.95f); // Middle, Near Top
+    
+    // Core Motion Accelerometer
+    self.motionManager = [[CMMotionManager alloc] init];
+    self.motionManager.accelerometerUpdateInterval = 1.0 / kFPS;
+    
+    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue]
+                                             withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
+                                                 [self accelerometer:accelerometerData.acceleration];
+                                                 if(error){
+                                                     NSLog(@"%@", error);
+                                                 }
+                                             }];
 	
 	[self startGame];
 	
@@ -331,12 +339,11 @@
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 	
 //	CCLOG(@"score = %d",_score);
-    // start spinning scene with transition
     [[CCDirector sharedDirector] replaceScene:[Highscores sceneWithScore:_score]
                                withTransition:[CCTransition  transitionFadeWithColor:[CCColor whiteColor] duration:1.0f]];
 }
 
-- (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration {
+- (void)accelerometer:(CMAcceleration)acceleration {
 	if(_gameSuspended) return;
     
 	float accel_filter = 0.1f;

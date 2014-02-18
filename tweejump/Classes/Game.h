@@ -1,5 +1,6 @@
 #import "cocos2d.h"
 #import "Main.h"
+#import <CoreMotion/CoreMotion.h>
 
 @interface Game : Main
 {
@@ -23,5 +24,6 @@
 + (Game *)scene;
 - (id)init;
 
+@property (strong, nonatomic) CMMotionManager *motionManager;
 
 @end
