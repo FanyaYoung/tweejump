@@ -14,14 +14,12 @@
 #define kMinBonusStep		30
 #define kMaxBonusStep		50
 
-enum {
-	kSpriteManager = 0,
-	kBird,
-	kScoreLabel,
-	kCloudsStartTag = 100,
-	kPlatformsStartTag = 200,
-	kBonusStartTag = 300
-};
+#define kSpriteManager      @"manager"
+#define kBird               @"bird"
+#define kScoreLabel         @"scoreLabel"
+#define kCloudsStartTag     100
+#define kPlatformsStartTag  200
+#define kBonusStartTag      300
 
 enum {
 	kBonus5 = 0,
@@ -31,11 +29,15 @@ enum {
 	kNumBonuses
 };
 
-@interface Main : CCLayer
+@interface Main : CCScene
 {
-	int currentCloudTag;
+	int _currentCloudTag;
 }
+
++ (Main *)scene;
+- (id)init;
+
 - (void)resetClouds;
 - (void)resetCloud;
-- (void)step:(ccTime)dt;
+
 @end

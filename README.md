@@ -18,8 +18,13 @@ Powered by [Cocos2D][13] framework.
 * Yannick Loriot
   * cocos2d version updated to 1.0.1
   * code ported to cocos2d 2.0 ([gles20 branch][21])
+* [Martin Walsh][22]
+  * Code ported to Cocos2D 3.0 / Xcode 5.0.2 / iOS7
+  * Universal iPhone support
+  * Replaced UIAccelerometer with CoreMotion
 
 [21]: https://github.com/haqu/tweejump/tree/gles20
+[22]: https://github.com/cocojoe/
 
 ## License
 

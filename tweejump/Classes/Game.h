@@ -1,25 +1,29 @@
 #import "cocos2d.h"
 #import "Main.h"
+#import <CoreMotion/CoreMotion.h>
 
 @interface Game : Main
 {
-	CGPoint bird_pos;
-	ccVertex2F bird_vel;
-	ccVertex2F bird_acc;	
+	CGPoint _bird_pos;
+	ccVertex2F _bird_vel;
+	ccVertex2F _bird_acc;
 
-	float currentPlatformY;
-	int currentPlatformTag;
-	float currentMaxPlatformStep;
-	int currentBonusPlatformIndex;
-	int currentBonusType;
-	int platformCount;
+	float _currentPlatformY;
+	int _currentPlatformTag;
+	float _currentMaxPlatformStep;
+	int _currentBonusPlatformIndex;
+	int _currentBonusType;
+	int _platformCount;
 	
-	BOOL gameSuspended;
-	BOOL birdLookingRight;
+	BOOL _gameSuspended;
+	BOOL _birdLookingRight;
 	
-	int score;
+	int _score;
 }
 
-+ (CCScene *)scene;
++ (Game *)scene;
+- (id)init;
+
+@property (strong, nonatomic) CMMotionManager *motionManager;
 
 @end

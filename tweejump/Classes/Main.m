@@ -11,39 +11,43 @@
 
 @implementation Main
 
++ (Main *)scene
+{
+    return [[self alloc] init];
+}
+
 - (id)init {
-//	NSLog(@"Main::init");
 	
-	if(![super init]) return nil;
+    self = [super init];
+    if (!self) return(nil);
 	
 	RANDOM_SEED();
 
-	CCSpriteBatchNode *batchNode = [CCSpriteBatchNode batchNodeWithFile:@"sprites.png" capacity:10];
-	[self addChild:batchNode z:-1 tag:kSpriteManager];
+	CCSpriteBatchNode *batchNode = [CCSpriteBatchNode batchNodeWithFile:@"sprites.png"];
+	[self addChild:batchNode z:-1 name:kSpriteManager];
 
 	CCSprite *background = [CCSprite spriteWithTexture:[batchNode texture] rect:CGRectMake(0,0,320,480)];
 	[batchNode addChild:background];
-	background.position = CGPointMake(160,240);
+    background.position = ccp(self.contentSize.width*0.5f,self.contentSize.height*0.5f);
+    
+    // Scale Background (Taller Devices)
+    background.scaleY = self.contentSize.height/background.contentSize.height;
 
 	[self initClouds];
-
-	[self schedule:@selector(step:)];
 	
 	return self;
 }
 
 - (void)dealloc {
-//	NSLog(@"Main::dealloc");
-	[super dealloc];
 }
 
 - (void)initClouds {
-//	NSLog(@"initClouds");
+//	CCLOG(@"initClouds");
 	
-	currentCloudTag = kCloudsStartTag;
-	while(currentCloudTag < kCloudsStartTag + kNumClouds) {
+	_currentCloudTag = kCloudsStartTag;
+	while(_currentCloudTag < kCloudsStartTag + kNumClouds) {
 		[self initCloud];
-		currentCloudTag++;
+		_currentCloudTag++;
 	}
 	
 	[self resetClouds];
@@ -58,35 +62,35 @@
 		case 2: rect = CGRectMake(336,240,252,119); break;
 	}	
 	
-	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByTag:kSpriteManager];
+	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByName:kSpriteManager recursively:NO];
 	CCSprite *cloud = [CCSprite spriteWithTexture:[batchNode texture] rect:rect];
-	[batchNode addChild:cloud z:3 tag:currentCloudTag];
+    [batchNode addChild:cloud z:3 name:[NSString stringWithFormat:@"%d",_currentCloudTag]];
 	
-	cloud.opacity = 128;
+	cloud.opacity = 0.5f;
 }
 
 - (void)resetClouds {
-//	NSLog(@"resetClouds");
+//	CCLOG(@"resetClouds");
 	
-	currentCloudTag = kCloudsStartTag;
+	_currentCloudTag = kCloudsStartTag;
 	
-	while(currentCloudTag < kCloudsStartTag + kNumClouds) {
+	while(_currentCloudTag < kCloudsStartTag + kNumClouds) {
 		[self resetCloud];
 
-		CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByTag:kSpriteManager];
-		CCSprite *cloud = (CCSprite*)[batchNode getChildByTag:currentCloudTag];
+		CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByName:kSpriteManager recursively:NO];
+		CCSprite *cloud = (CCSprite*)[batchNode getChildByName:[NSString stringWithFormat:@"%d",_currentCloudTag] recursively:NO];
 		CGPoint pos = cloud.position;
 		pos.y -= 480.0f;
 		cloud.position = pos;
 		
-		currentCloudTag++;
+		_currentCloudTag++;
 	}
 }
 
 - (void)resetCloud {
 	
-	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByTag:kSpriteManager];
-	CCSprite *cloud = (CCSprite*)[batchNode getChildByTag:currentCloudTag];
+	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByName:kSpriteManager recursively:NO];
+	CCSprite *cloud = (CCSprite*)[batchNode getChildByName:[NSString stringWithFormat:@"%d",_currentCloudTag] recursively:NO];
 	
 	float distance = random()%20 + 5;
 	
@@ -103,14 +107,17 @@
 	cloud.position = ccp(x,y);
 }
 
-- (void)step:(ccTime)dt {
-//	NSLog(@"Main::step");
+#pragma mark - Scheduled update
+// Notice, that update is now automatically called for any descendant of CCNode, if the method is implemented
+     
+-(void)update:(CCTime)delta {
 	
-	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByTag:kSpriteManager];
-	
-	int t = kCloudsStartTag;
-	for(t; t < kCloudsStartTag + kNumClouds; t++) {
-		CCSprite *cloud = (CCSprite*)[batchNode getChildByTag:t];
+	CCSpriteBatchNode *batchNode = (CCSpriteBatchNode*)[self getChildByName:kSpriteManager recursively:NO];
+
+	for(int t = kCloudsStartTag; t < kCloudsStartTag + kNumClouds; t++) {
+        
+		CCSprite *cloud = (CCSprite*)[batchNode getChildByName:[NSString stringWithFormat:@"%d",t] recursively:NO];
+        
 		CGPoint pos = cloud.position;
 		CGSize size = cloud.contentSize;
 		pos.x += 0.1f * cloud.scaleY;
