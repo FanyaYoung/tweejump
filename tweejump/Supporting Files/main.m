@@ -11,6 +11,10 @@
 int main(int argc, char *argv[]) {
     
     @autoreleasepool {
+#ifdef ANDROID
+  [UIScreen mainScreen].currentMode = 
+          [UIScreenMode emulatedMode:UIScreenIPhone3GEmulationMode];
+#endif
         int retVal = UIApplicationMain(argc, argv, nil, @"AppDelegate");
         return retVal;
     }
