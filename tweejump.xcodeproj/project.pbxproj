@@ -1920,6 +1920,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
+				opengles2 = YES;
+				portrait = YES;
 			};
 			name = Debug;
 		};
@@ -1941,6 +1943,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
+				opengles2 = YES;
+				portrait = YES;
 			};
 			name = Release;
 		};
