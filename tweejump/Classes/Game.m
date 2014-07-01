@@ -14,6 +14,58 @@
 - (void)showHighscores;
 @end
 
+@interface MotionWatcher : NSObject
+@property (strong, nonatomic) CMMotionManager *motionManager;
+@property (strong, nonatomic) Game *runningGame;
+@end
+
+@implementation MotionWatcher
+
++(MotionWatcher *) sharedInstance
+{
+    static MotionWatcher *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[MotionWatcher alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (id)init
+{
+    // Core Motion Accelerometer
+    self = [super init];
+    if (self)
+    {
+        self.motionManager = [[CMMotionManager alloc] init];
+    }
+    return self;
+}
+
+- (void)accelerometer:(CMAcceleration)acceleration {
+    [self.runningGame accelerometer:acceleration];
+}
+
+- (void)start:(Game *)game
+{
+    self.runningGame = game;
+    self.motionManager.accelerometerUpdateInterval = 1.0 / kFPS;
+    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue]
+                                             withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
+                                                 [self accelerometer:accelerometerData.acceleration];
+                                                 if(error){
+                                                     NSLog(@"%@", error);
+                                                 }
+                                             }];
+}
+
+- (void)stop
+{
+    self.runningGame = nil;
+    [self.motionManager stopAccelerometerUpdates];
+}
+@end
+
 
 @implementation Game
 
@@ -48,20 +100,10 @@
 	[self addChild:scoreLabel z:5 name:kScoreLabel];
     scoreLabel.positionType = CCPositionTypeNormalized;
     scoreLabel.position = ccp(0.50f, 0.95f); // Middle, Near Top
-    
-    // Core Motion Accelerometer
-    self.motionManager = [[CMMotionManager alloc] init];
-    self.motionManager.accelerometerUpdateInterval = 1.0 / kFPS;
-    
-    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue]
-                                             withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
-                                                 [self accelerometer:accelerometerData.acceleration];
-                                                 if(error){
-                                                     NSLog(@"%@", error);
-                                                 }
-                                             }];
 	
 	[self startGame];
+    
+    [[MotionWatcher sharedInstance] start:self];
 	
 	return self;
 }
@@ -336,6 +378,7 @@
 - (void)showHighscores {
 //	CCLOG(@"showHighscores");
 	_gameSuspended = YES;
+    [[MotionWatcher sharedInstance] stop];
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 	
 //	CCLOG(@"score = %d",_score);

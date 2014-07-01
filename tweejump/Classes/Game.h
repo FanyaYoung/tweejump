@@ -23,7 +23,6 @@
 
 + (Game *)scene;
 - (id)init;
-
-@property (strong, nonatomic) CMMotionManager *motionManager;
+- (void)accelerometer:(CMAcceleration)acceleration;
 
 @end
